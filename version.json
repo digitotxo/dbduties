@@ -1,8 +1,9 @@
 {
   "latest_version_code": 42,
-  "latest_version_name": "1.0.1",
-  "min_supported_version_code": 42,
+  "latest_version_name": "1.0.2",
+  "min_supported_version_code": 43,
   "download_url": "https://your.domain/app/DublinBusOracle-2.3.1.apk",
   "whats_new": "- Faster duty parser\n- DZ cards updated\n- New duty colours"
 }
+
 
