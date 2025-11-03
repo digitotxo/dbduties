@@ -1,10 +1,11 @@
 {
-  "latest_version_code": 4,
-  "latest_version_name": "1.0.4",
-  "min_supported_version_code": 4,
+  "latest_version_code": 3,
+  "latest_version_name": "1.0.3",
+  "min_supported_version_code": 3,
   "download_url": "https://drive.google.com/file/d/1mLozmmLZRYGsHAiF44z9Xerfbi3sZSC_/view?usp=sharing",
   "whats_new": "- Faster duty parser\n- DZ cards updated\n- New duty colours"
 }
+
 
 
 
