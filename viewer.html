@@ -5,13 +5,13 @@
 
 body{
     margin:0;
-    padding:15px;
+    padding:10px;
     background:#f2f5fa;
     font-family:Arial,sans-serif;
 }
 
 .container{
-    max-width:900px;
+    max-width:1200px;
     margin:auto;
 }
 
@@ -25,24 +25,28 @@ body{
 
 h1{
     color:#0c4da2;
-    margin-top:0;
-    margin-bottom:10px;
-    font-size:42px;
+    margin:0;
+    font-size:30px;
 }
 
 .subtitle{
-    font-size:22px;
+    font-size:18px;
     color:#555;
+    margin-top:8px;
+}
+
+.iframe-card{
+    padding:5px;
+    overflow:hidden;
 }
 
 iframe{
-    width:100%;
-    height:1000px;
+    width:122%;
+    height:1150px;
     border:none;
-    border-radius:12px;
     background:white;
     transform:scale(0.82);
-    transform-origin:top center;
+    transform-origin:top left;
 }
 
 .support-card{
@@ -79,7 +83,7 @@ iframe{
 👋 Hello Driver
 </h1><div class="subtitle" id="dateText">
 Your duty is ready.
-</div></div><div class="card"><iframe id="dutyFrame"></iframe></div><div class="support-card"><h3>☕ Enjoying DB Duty Checker?</h3><p>
+</div></div><div class="card iframe-card"><iframe id="dutyFrame"></iframe></div><div class="support-card"><h3>☕ Enjoying DB Duty Checker?</h3><p>
 This project is provided free of charge.
 If it saves you time every week, a coffee is always appreciated.
 </p><a
