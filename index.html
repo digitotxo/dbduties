@@ -1,7 +1,14 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>DB Duty Checker</title><style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>DB Duty Checker</title>
+
+<style>
 
 *{
     box-sizing:border-box;
@@ -20,11 +27,24 @@ body{
     margin:auto;
 }
 
-.logo{
+.logo-button{
+    width:100%;
+    background:none;
+    border:none;
+    padding:0;
+    cursor:pointer;
+}
+
+.logo-button img{
     width:100%;
     max-width:320px;
     display:block;
     margin:20px auto 30px;
+    transition:transform .15s;
+}
+
+.logo-button:active img{
+    transform:scale(.97);
 }
 
 .card{
@@ -35,6 +55,249 @@ body{
     box-shadow:0 4px 20px rgba(0,0,0,.1);
 }
 
+h2{
+    margin-top:0;
+    text-align:center;
+}
+
+label{
+    display:block;
+    margin-top:12px;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+input,
+select{
+    width:100%;
+    padding:14px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:16px;
+}
+
+.manual-button{
+    width:100%;
+    margin-top:20px;
+    padding:16px;
+    font-size:18px;
+    font-weight:bold;
+    border:none;
+    border-radius:12px;
+    background:#0c4da2;
+    color:white;
+    cursor:pointer;
+}
+
+.status{
+    text-align:center;
+    margin-top:10px;
+    margin-bottom:20px;
+    color:#666;
+    font-size:14px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<button
+class="logo-button"
+onclick="openCopiedDuty()">
+
+<img
+src="file_00000000d82c71f4996b264dea697185.png"
+alt="DB Duty Checker">
+
+</button>
+
+<div class="status" id="status">
+Tap the logo to open the copied duty
+</div>
+
+<div class="card">
+
+<h2>Manual Duty Lookup</h2>
+
+<label>Roster</label>
+
+<select id="roster">
+    <option>DZ1</option>
+    <option>DZ2</option>
+    <option>DZ3</option>
+    <option>13</option>
+</select>
+
+<label>Duty Number</label>
+
+<input
+id="dutyNumber"
+type="number"
+placeholder="Example: 17">
+
+<label>Day Type</label>
+
+<select id="dayType">
+    <option value="MF">Monday - Friday</option>
+    <option value="SAT">Saturday</option>
+    <option value="SUN">Sunday / Bank Holiday</option>
+</select>
+
+<button
+class="manual-button"
+onclick="openManualDuty()">
+
+OPEN DUTY
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+const BASE = "./";
+
+const bankHolidays = [
+
+"2026-01-01",
+"2026-02-02",
+"2026-03-17",
+"2026-04-06",
+"2026-05-04",
+"2026-06-01",
+"2026-08-03",
+"2026-10-26",
+"2026-12-25",
+"2026-12-28"
+
+];
+
+async function openCopiedDuty(){
+
+try{
+
+const text =
+await navigator.clipboard.readText();
+
+const rosterMatch =
+text.match(
+/Roster\s*:\s*([A-Z0-9]+)\s*\/\s*(\d+)/i
+);
+
+const dateMatch =
+text.match(
+/Date\s*:\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i
+);
+
+if(!rosterMatch){
+
+alert("Roster not found in copied message");
+return;
+
+}
+
+if(!dateMatch){
+
+alert("Date not found in copied message");
+return;
+
+}
+
+const roster =
+rosterMatch[1].toUpperCase();
+
+const duty =
+rosterMatch[2].padStart(2,"0");
+
+const day =
+parseInt(dateMatch[1]);
+
+const month =
+parseInt(dateMatch[2]);
+
+const year =
+parseInt(dateMatch[3]);
+
+const date =
+new Date(year,month-1,day);
+
+const isoDate =
+year + "-" +
+String(month).padStart(2,"0") + "-" +
+String(day).padStart(2,"0");
+
+let type = "MF";
+
+if(bankHolidays.includes(isoDate)){
+    type = "SUN";
+}
+else if(date.getDay() === 0){
+    type = "SUN";
+}
+else if(date.getDay() === 6){
+    type = "SAT";
+}
+
+const url =
+BASE +
+roster + "_" + type +
+"/" +
+roster + "-" + duty +
+".html";
+
+window.location.href = url;
+
+}
+catch(err){
+
+alert(
+"Clipboard access failed. Copy the SMS first."
+);
+
+}
+
+}
+
+function openManualDuty(){
+
+const roster =
+document.getElementById("roster").value;
+
+const duty =
+document.getElementById("dutyNumber").value
+.padStart(2,"0");
+
+const dayType =
+document.getElementById("dayType").value;
+
+if(!duty){
+
+alert("Enter a duty number");
+return;
+
+}
+
+const url =
+BASE +
+roster + "_" + dayType +
+"/" +
+roster + "-" + duty +
+".html";
+
+window.location.href = url;
+
+}
+
+</script>
+
+</body>
+</html>
 h2{
     margin-top:0;
     text-align:center;
