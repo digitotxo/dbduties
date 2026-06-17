@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Duty Viewer</title>
-
-<style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Duty Viewer</title><style>
 
 body{
     margin:0;
@@ -31,14 +26,23 @@ body{
 h1{
     color:#0c4da2;
     margin-top:0;
+    margin-bottom:10px;
+    font-size:42px;
+}
+
+.subtitle{
+    font-size:22px;
+    color:#555;
 }
 
 iframe{
     width:100%;
-    height:1400px;
+    height:1000px;
     border:none;
     border-radius:12px;
     background:white;
+    transform:scale(0.82);
+    transform-origin:top center;
 }
 
 .support-card{
@@ -48,6 +52,16 @@ iframe{
     margin-bottom:24px;
     text-align:center;
     box-shadow:0 4px 20px rgba(0,0,0,.10);
+}
+
+.support-card h3{
+    margin-top:0;
+    color:#0c4da2;
+}
+
+.support-card p{
+    color:#666;
+    line-height:1.5;
 }
 
 .coffee-button{
@@ -61,55 +75,21 @@ iframe{
     font-size:18px;
 }
 
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-
-<div class="card">
-
-<h1 id="welcome">
+</style></head><body><div class="container"><div class="card"><h1 id="welcome">
 👋 Hello Driver
-</h1>
-
-<p id="dateText">
+</h1><div class="subtitle" id="dateText">
 Your duty is ready.
-</p>
-
-</div>
-
-<div class="card">
-
-<iframe id="dutyFrame"></iframe>
-
-</div>
-
-<div class="support-card">
-
-<h3>☕ Enjoying DB Duty Checker?</h3>
-
-<p>
+</div></div><div class="card"><iframe id="dutyFrame"></iframe></div><div class="support-card"><h3>☕ Enjoying DB Duty Checker?</h3><p>
 This project is provided free of charge.
 If it saves you time every week, a coffee is always appreciated.
-</p>
-
-<a
+</p><a
 class="coffee-button"
 href="https://revolut.me/lander9vxj"
 target="_blank">
 
 ☕ Buy Me a Coffee
 
-</a>
-
-</div>
-
-</div>
-
-<script>
+</a></div></div><script>
 
 const params =
 new URLSearchParams(window.location.search);
@@ -129,8 +109,17 @@ params.get("duty");
 const type =
 params.get("type");
 
+let displayName = name;
+
+if(name.includes(",")){
+    displayName =
+    name.substring(
+        name.indexOf(",") + 1
+    ).trim();
+}
+
 document.getElementById("welcome").innerHTML =
-"👋 Hello " + name;
+"👋 Hello " + displayName;
 
 if(date){
 document.getElementById("dateText").innerHTML =
@@ -149,7 +138,5 @@ dutyUrl;
 
 window.scrollTo(0,0);
 
-</script>
-
-</body>
+</script></body>
 </html>
