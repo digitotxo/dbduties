@@ -1,112 +1,48 @@
 <!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Donnybrook Duty Checker Lite</title><style>
-
-*{
-    box-sizing:border-box;
-}
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Duty Viewer</title><style>
 
 body{
     margin:0;
     padding:15px;
-    font-family:Arial,sans-serif;
     background:#f2f5fa;
-    color:#222;
+    font-family:Arial,sans-serif;
 }
 
 .container{
-    max-width:700px;
+    max-width:900px;
     margin:auto;
-}
-
-.header{
-    text-align:center;
-    margin-bottom:15px;
-}
-
-.header h1{
-    margin:0;
-    color:#0c4da2;
-    font-size:32px;
-}
-
-.header p{
-    margin-top:10px;
-    color:#666;
-    font-size:18px;
-}
-
-.logo-button{
-    width:100%;
-    background:none;
-    border:none;
-    padding:0;
-    cursor:pointer;
-}
-
-.logo-button img{
-    width:100%;
-    max-width:500px;
-    display:block;
-    margin:0 auto 15px auto;
-    transition:transform .15s;
-}
-
-.logo-button:active img{
-    transform:scale(.97);
 }
 
 .card{
     background:white;
     border-radius:20px;
-    padding:22px;
-    margin-bottom:24px;
+    padding:20px;
+    margin-bottom:20px;
     box-shadow:0 4px 20px rgba(0,0,0,.10);
 }
 
-.card h2{
-    margin-top:0;
+h1{
     color:#0c4da2;
+    margin-top:0;
+    margin-bottom:10px;
+    font-size:42px;
 }
 
-.instructions p{
-    font-size:18px;
-    margin:12px 0;
+.subtitle{
+    font-size:22px;
+    color:#555;
 }
 
-label{
-    display:block;
-    margin-top:15px;
-    margin-bottom:8px;
-    font-weight:bold;
-}
-
-input,
-select{
+iframe{
     width:100%;
-    padding:18px;
-    border:1px solid #ccc;
-    border-radius:12px;
-    font-size:18px;
-}
-
-.button{
-    width:100%;
-    margin-top:20px;
-    padding:20px;
+    height:1200px;
     border:none;
     border-radius:12px;
-    background:#0c4da2;
-    color:white;
-    font-size:20px;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-.button:active{
-    transform:scale(.99);
+    background:white;
+    transform:scale(0.95);
+    transform-origin:top center;
 }
 
 .support-card{
@@ -139,51 +75,11 @@ select{
     font-size:18px;
 }
 
-.footer{
-    text-align:center;
-    color:#777;
-    font-size:13px;
-    margin-top:10px;
-    margin-bottom:20px;
-}
-
-</style></head><body><div class="container"><div class="header">
-<h1>Donnybrook Duty Checker Lite</h1>
-<p>Fast access to Dublin Bus duty cards.</p>
-</div><button class="logo-button" onclick="openCopiedDuty()">
-<img src="file_00000000d82c71f4996b264dea697185.png" alt="DB Duty Checker">
-</button><div class="card"><h2>Automatic Lookup</h2><div class="instructions">
-<p>1️⃣ Copy the entire SMS duty message.</p>
-<p>2️⃣ Return to this page.</p>
-<p>3️⃣ Tap the logo above.</p>
-<p>4️⃣ Your duty card will open automatically.</p>
-</div></div><div class="card"><h2>Manual Lookup</h2><p>Can't use the SMS? Enter the duty manually.</p><label>Zone</label>
-
-<select id="roster">
-<option>DZ1</option>
-<option>DZ2</option>
-<option value="BY">Bray</option>
-<option>13</option>
-</select><label>Duty Number</label>
-
-<input
-id="dutyNumber"
-type="number"
-placeholder="Example: 17">
-
-<label>Day Type</label>
-
-<select id="dayType">
-<option value="MF">Monday - Friday</option>
-<option value="SAT">Saturday</option>
-<option value="SUN">Sunday / Bank Holiday</option>
-</select><button
-class="button"
-onclick="openManualDuty()">
-
-OPEN DUTY
-
-</button></div><div class="support-card"><h3>☕ Enjoying DB Duty Checker?</h3><p>
+</style></head><body><div class="container"><div class="card"><h1 id="welcome">
+👋 Hello Driver
+</h1><div class="subtitle" id="dateText">
+Your duty is ready.
+</div></div><div class="card"><iframe id="dutyFrame"></iframe></div><div class="support-card"><h3>☕ Enjoying DB Duty Checker?</h3><p>
 This project is provided free of charge.
 If it saves you time every week, a coffee is always appreciated.
 </p><a
@@ -193,136 +89,51 @@ target="_blank">
 
 ☕ Buy Me a Coffee
 
-</a></div><div class="footer">
-Made with ❤️ in Dublin
-</div></div><script>
+</a></div></div><script>
 
-const BASE = "DONNYBROOK/";
+const params =
+new URLSearchParams(window.location.search);
 
-const bankHolidays = [
-"2026-01-01",
-"2026-02-02",
-"2026-03-17",
-"2026-04-06",
-"2026-05-04",
-"2026-06-01",
-"2026-08-03",
-"2026-10-26",
-"2026-12-25",
-"2026-12-28"
-];
-
-async function openCopiedDuty(){
-
-try{
-
-const text =
-await navigator.clipboard.readText();
-
-const rosterMatch =
-text.match(
-/Roster\s*:\s*([A-Z0-9]+)\s*\/\s*(\d+)/i
-);
-
-const dateMatch =
-text.match(
-/Date\s*:\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i
-);
-
-if(!rosterMatch){
-alert("Roster not found in copied SMS.");
-return;
-}
-
-if(!dateMatch){
-alert("Date not found in copied SMS.");
-return;
-}
-
-let roster =
-rosterMatch[1].toUpperCase();
-
-if(roster === "DZ3"){
-    roster = "BY";
-}
-
-const duty =
-rosterMatch[2].padStart(2,"0");
-
-const day =
-parseInt(dateMatch[1]);
-
-const month =
-parseInt(dateMatch[2]);
-
-const year =
-parseInt(dateMatch[3]);
+const name =
+params.get("name") || "Driver";
 
 const date =
-new Date(year,month-1,day);
+params.get("date") || "";
 
-const isoDate =
-year + "-" +
-String(month).padStart(2,"0") + "-" +
-String(day).padStart(2,"0");
-
-let type = "MF";
-
-if(bankHolidays.includes(isoDate)){
-    type = "SUN";
-}
-else if(date.getDay() === 0){
-    type = "SUN";
-}
-else if(date.getDay() === 6){
-    type = "SAT";
-}
-
-window.location.href =
-BASE +
-roster + "_" + type +
-"/" +
-roster + "-" + duty +
-".html";
-
-}
-catch(err){
-
-alert(
-"Clipboard access failed. Copy the SMS first and try again."
-);
-
-}
-
-}
-
-function openManualDuty(){
-
-let roster =
-document.getElementById("roster").value;
+const roster =
+params.get("roster");
 
 const duty =
-document.getElementById("dutyNumber").value
-.padStart(2,"0");
+params.get("duty");
 
 const type =
-document.getElementById("dayType").value;
+params.get("type");
 
-if(!duty){
+let displayName = name;
 
-alert("Please enter a duty number.");
-return;
-
+if(name.includes(",")){
+    displayName = name.split(",")[1].trim();
 }
 
-window.location.href =
-BASE +
+document.getElementById("welcome").innerHTML =
+"👋 Hello " + displayName;
+
+if(date){
+document.getElementById("dateText").innerHTML =
+"Your duty for " + date + " is ready.";
+}
+
+const dutyUrl =
+"DONNYBROOK/" +
 roster + "_" + type +
 "/" +
 roster + "-" + duty +
 ".html";
 
-}
+document.getElementById("dutyFrame").src =
+dutyUrl;
+
+window.scrollTo(0,0);
 
 </script></body>
 </html>
