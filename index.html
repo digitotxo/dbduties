@@ -1,40 +1,265 @@
 <!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dublin Bus Duties</title><style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>DB Duty Checker</title><style>
+
+*{
+    box-sizing:border-box;
+}
+
 body{
     margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#f5f5f5;
-    font-family:Arial, sans-serif;
+    padding:20px;
+    font-family:Arial,sans-serif;
+    background:#f2f5fa;
+    color:#222;
+}
+
+.container{
+    max-width:600px;
+    margin:auto;
+}
+
+.logo{
+    width:100%;
+    max-width:320px;
+    display:block;
+    margin:20px auto 30px;
+}
+
+.card{
+    background:white;
+    border-radius:20px;
+    padding:24px;
+    margin-bottom:20px;
+    box-shadow:0 4px 20px rgba(0,0,0,.1);
+}
+
+h2{
+    margin-top:0;
+    text-align:center;
 }
 
 button{
-    font-size:28px;
-    font-weight:bold;
-    padding:25px 50px;
+    width:100%;
     border:none;
     border-radius:12px;
-    background:#0078d7;
-    color:white;
+    padding:18px;
+    font-size:18px;
+    font-weight:bold;
     cursor:pointer;
 }
 
-button:hover{
-    opacity:0.9;
+.primary{
+    background:#0c4da2;
+    color:white;
 }
 
-#status{
-    position:fixed;
-    bottom:20px;
-    left:50%;
-    transform:translateX(-50%);
-    color:#555;
+.secondary{
+    background:#f0c419;
+    color:#111;
+}
+
+label{
+    display:block;
+    margin-top:12px;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+input,select{
+    width:100%;
+    padding:14px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    font-size:16px;
+}
+
+.status{
+    text-align:center;
+    margin-top:15px;
+    color:#666;
     font-size:14px;
+}
+
+</style></head><body><div class="container"><img src="db-duty-checker-logo.png"
+class="logo"
+alt="DB Duty Checker">
+
+<div class="card"><h2>Automatic Duty Lookup</h2><p>
+Copy the entire SMS and press the button below.
+</p><button class="primary"
+onclick="openCopiedDuty()">
+OPEN COPIED DUTY
+</button>
+
+<div class="status" id="status"></div></div><div class="card"><h2>Manual Duty Lookup</h2><label>Roster</label>
+
+<select id="roster">
+    <option>DZ1</option>
+    <option>DZ2</option>
+    <option>DZ3</option>
+    <option>13</option>
+</select><label>Duty Number</label>
+
+<input
+id="dutyNumber"
+type="number"
+placeholder="Example: 17">
+
+<label>Day Type</label>
+
+<select id="dayType">
+    <option value="MF">Monday - Friday</option>
+    <option value="SAT">Saturday</option>
+    <option value="SUN">Sunday / Bank Holiday</option>
+</select><br><br>
+
+<button class="secondary"
+onclick="openManualDuty()">
+OPEN DUTY
+</button>
+
+</div></div><script>
+
+const BASE =
+"https://digitotxo.github.io/dbduties/DONNYBROOK/";
+
+const bankHolidays = [
+
+"2026-01-01",
+"2026-02-02",
+"2026-03-17",
+"2026-04-06",
+"2026-05-04",
+"2026-06-01",
+"2026-08-03",
+"2026-10-26",
+"2026-12-25",
+"2026-12-28"
+
+];
+
+async function openCopiedDuty(){
+
+    try{
+
+        const text =
+            await navigator.clipboard.readText();
+
+        const rosterMatch =
+            text.match(
+                /Roster\s*:\s*([A-Z0-9]+)\s*\/\s*(\d+)/i
+            );
+
+        const dateMatch =
+            text.match(
+                /Date\s*:\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i
+            );
+
+        if(!rosterMatch){
+            alert("Roster not found.");
+            return;
+        }
+
+        if(!dateMatch){
+            alert("Date not found.");
+            return;
+        }
+
+        const roster =
+            rosterMatch[1].toUpperCase();
+
+        const duty =
+            rosterMatch[2].padStart(2,"0");
+
+        const day =
+            parseInt(dateMatch[1]);
+
+        const month =
+            parseInt(dateMatch[2]);
+
+        const year =
+            parseInt(dateMatch[3]);
+
+        const date =
+            new Date(year,month-1,day);
+
+        const isoDate =
+            year + "-" +
+            String(month).padStart(2,"0") + "-" +
+            String(day).padStart(2,"0");
+
+        let type = "MF";
+
+        if(bankHolidays.includes(isoDate)){
+            type = "SUN";
+        }
+        else if(date.getDay() === 0){
+            type = "SUN";
+        }
+        else if(date.getDay() === 6){
+            type = "SAT";
+        }
+
+        const url =
+            BASE +
+            roster + "_" + type +
+            "/" +
+            roster + "-" + duty +
+            ".html";
+
+        document.getElementById("status")
+            .innerText =
+            "Opening " +
+            roster + "-" + duty;
+
+        window.location.href = url;
+
+    }
+    catch(err){
+
+        alert(
+            "Clipboard access failed. Copy the SMS first."
+        );
+
+    }
+
+}
+
+function openManualDuty(){
+
+    const roster =
+        document.getElementById("roster").value;
+
+    const duty =
+        document.getElementById("dutyNumber")
+        .value
+        .padStart(2,"0");
+
+    const dayType =
+        document.getElementById("dayType").value;
+
+    if(!duty){
+
+        alert("Enter a duty number");
+        return;
+
+    }
+
+    const url =
+        BASE +
+        roster + "_" + dayType +
+        "/" +
+        roster + "-" + duty +
+        ".html";
+
+    window.location.href = url;
+
+}
+
+</script></body>
+</html>    font-size:14px;
 }
 </style></head>
 <body><button onclick="openDuty()">OPEN DUTY</button>
