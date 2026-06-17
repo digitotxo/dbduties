@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>DB Duty Checker</title>
 
 <style>
-
 *{
     box-sizing:border-box;
 }
@@ -37,27 +33,21 @@ body{
 
 .logo-button img{
     width:100%;
-    max-width:320px;
+    max-width:420px;
     display:block;
-    margin:20px auto 30px;
-    transition:transform .15s;
-}
-
-.logo-button:active img{
-    transform:scale(.97);
+    margin:10px auto 20px auto;
 }
 
 .card{
     background:white;
     border-radius:20px;
     padding:24px;
-    margin-bottom:20px;
     box-shadow:0 4px 20px rgba(0,0,0,.1);
 }
 
 h2{
-    margin-top:0;
     text-align:center;
+    margin-top:0;
 }
 
 label{
@@ -89,14 +79,9 @@ select{
     cursor:pointer;
 }
 
-.status{
-    text-align:center;
-    margin-top:10px;
-    margin-bottom:20px;
-    color:#666;
-    font-size:14px;
+.manual-button:hover{
+    opacity:.9;
 }
-
 </style>
 
 </head>
@@ -105,26 +90,15 @@ select{
 
 <div class="container">
 
-<button
-class="logo-button"
-onclick="openCopiedDuty()">
-
-<img
-src="file_00000000d82c71f4996b264dea697185.png"
-alt="DB Duty Checker">
-
+<button class="logo-button" onclick="openCopiedDuty()">
+<img src="file_00000000d82c71f4996b264dea697185.png" alt="DB Duty Checker">
 </button>
-
-<div class="status" id="status">
-Tap the logo to open the copied duty
-</div>
 
 <div class="card">
 
 <h2>Manual Duty Lookup</h2>
 
 <label>Roster</label>
-
 <select id="roster">
     <option>DZ1</option>
     <option>DZ2</option>
@@ -133,14 +107,12 @@ Tap the logo to open the copied duty
 </select>
 
 <label>Duty Number</label>
-
 <input
 id="dutyNumber"
 type="number"
 placeholder="Example: 17">
 
 <label>Day Type</label>
-
 <select id="dayType">
     <option value="MF">Monday - Friday</option>
     <option value="SAT">Saturday</option>
@@ -150,9 +122,7 @@ placeholder="Example: 17">
 <button
 class="manual-button"
 onclick="openManualDuty()">
-
 OPEN DUTY
-
 </button>
 
 </div>
@@ -161,10 +131,9 @@ OPEN DUTY
 
 <script>
 
-const BASE = "./";
+const BASE = "DONNYBROOK/";
 
 const bankHolidays = [
-
 "2026-01-01",
 "2026-02-02",
 "2026-03-17",
@@ -175,38 +144,28 @@ const bankHolidays = [
 "2026-10-26",
 "2026-12-25",
 "2026-12-28"
-
 ];
 
 async function openCopiedDuty(){
 
 try{
 
-const text =
-await navigator.clipboard.readText();
+const text = await navigator.clipboard.readText();
 
 const rosterMatch =
-text.match(
-/Roster\s*:\s*([A-Z0-9]+)\s*\/\s*(\d+)/i
-);
+text.match(/Roster\s*:\s*([A-Z0-9]+)\s*\/\s*(\d+)/i);
 
 const dateMatch =
-text.match(
-/Date\s*:\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i
-);
+text.match(/Date\s*:\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i);
 
 if(!rosterMatch){
-
-alert("Roster not found in copied message");
+alert("Roster not found.");
 return;
-
 }
 
 if(!dateMatch){
-
-alert("Date not found in copied message");
+alert("Date not found.");
 return;
-
 }
 
 const roster =
@@ -235,29 +194,27 @@ String(day).padStart(2,"0");
 let type = "MF";
 
 if(bankHolidays.includes(isoDate)){
-    type = "SUN";
+type = "SUN";
 }
 else if(date.getDay() === 0){
-    type = "SUN";
+type = "SUN";
 }
 else if(date.getDay() === 6){
-    type = "SAT";
+type = "SAT";
 }
 
-const url =
+window.location.href =
 BASE +
 roster + "_" + type +
 "/" +
 roster + "-" + duty +
 ".html";
 
-window.location.href = url;
-
 }
 catch(err){
 
 alert(
-"Clipboard access failed. Copy the SMS first."
+"Copy the SMS first, then tap the logo."
 );
 
 }
@@ -273,24 +230,20 @@ const duty =
 document.getElementById("dutyNumber").value
 .padStart(2,"0");
 
-const dayType =
+const type =
 document.getElementById("dayType").value;
 
 if(!duty){
-
-alert("Enter a duty number");
+alert("Enter a duty number.");
 return;
-
 }
 
-const url =
+window.location.href =
 BASE +
-roster + "_" + dayType +
+roster + "_" + type +
 "/" +
 roster + "-" + duty +
 ".html";
-
-window.location.href = url;
 
 }
 
