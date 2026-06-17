@@ -1,26 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DB Duty Checker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Donnybrook Duty Checker Lite</title><style>
 
-<style>
 *{
     box-sizing:border-box;
 }
 
 body{
     margin:0;
-    padding:20px;
+    padding:15px;
     font-family:Arial,sans-serif;
     background:#f2f5fa;
     color:#222;
 }
 
 .container{
-    max-width:600px;
+    max-width:700px;
     margin:auto;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.header h1{
+    margin:0;
+    color:#0c4da2;
+    font-size:32px;
+}
+
+.header p{
+    margin-top:10px;
+    color:#666;
+    font-size:18px;
 }
 
 .logo-button{
@@ -33,107 +47,121 @@ body{
 
 .logo-button img{
     width:100%;
-    max-width:420px;
+    max-width:500px;
     display:block;
-    margin:10px auto 20px auto;
+    margin:0 auto 15px auto;
+    transition:transform .15s;
+}
+
+.logo-button:active img{
+    transform:scale(.97);
 }
 
 .card{
     background:white;
     border-radius:20px;
-    padding:24px;
-    box-shadow:0 4px 20px rgba(0,0,0,.1);
+    padding:22px;
+    margin-bottom:24px;
+    box-shadow:0 4px 20px rgba(0,0,0,.10);
 }
 
-h2{
-    text-align:center;
+.card h2{
     margin-top:0;
+    color:#0c4da2;
+}
+
+.instructions p{
+    font-size:18px;
+    margin:12px 0;
 }
 
 label{
     display:block;
-    margin-top:12px;
-    margin-bottom:6px;
+    margin-top:15px;
+    margin-bottom:8px;
     font-weight:bold;
 }
 
 input,
 select{
     width:100%;
-    padding:14px;
+    padding:18px;
     border:1px solid #ccc;
-    border-radius:10px;
-    font-size:16px;
+    border-radius:12px;
+    font-size:18px;
 }
 
-.manual-button{
+.button{
     width:100%;
     margin-top:20px;
-    padding:16px;
-    font-size:18px;
-    font-weight:bold;
+    padding:20px;
     border:none;
     border-radius:12px;
     background:#0c4da2;
     color:white;
+    font-size:20px;
+    font-weight:bold;
     cursor:pointer;
 }
 
-.manual-button:hover{
-    opacity:.9;
+.button:active{
+    transform:scale(.99);
 }
-</style>
 
-</head>
+.footer{
+    text-align:center;
+    color:#777;
+    font-size:13px;
+    margin-top:10px;
+    margin-bottom:20px;
+}
 
-<body>
+</style></head><body><div class="container"><div class="header"><h1>Donnybrook Duty Checker Lite</h1><p>
+Fast access to Dublin Bus duty cards.
+</p></div><button
+class="logo-button"
+onclick="openCopiedDuty()">
 
-<div class="container">
+<img
+src="file_00000000d82c71f4996b264dea697185.png"
+alt="DB Duty Checker">
 
-<button class="logo-button" onclick="openCopiedDuty()">
-<img src="file_00000000d82c71f4996b264dea697185.png" alt="DB Duty Checker">
-</button>
+</button><div class="card"><h2>Automatic Lookup</h2><div class="instructions"><p>1️⃣ Copy the entire SMS duty message.</p><p>2️⃣ Return to this page.</p><p>3️⃣ Tap the logo above.</p><p>4️⃣ Your duty card will open automatically.</p></div></div><div class="card"><h2>Manual Lookup</h2><p>
+Can't use the SMS? Enter the duty manually.
+</p><label>Roster</label>
 
-<div class="card">
-
-<h2>Manual Duty Lookup</h2>
-
-<label>Roster</label>
 <select id="roster">
-    <option>DZ1</option>
-    <option>DZ2</option>
-    <option>DZ3</option>
-    <option>13</option>
-</select>
+<option>DZ1</option>
+<option>DZ2</option>
+<option>DZ3</option>
+<option>13</option>
+</select><label>Duty Number</label>
 
-<label>Duty Number</label>
 <input
 id="dutyNumber"
 type="number"
 placeholder="Example: 17">
 
 <label>Day Type</label>
+
 <select id="dayType">
-    <option value="MF">Monday - Friday</option>
-    <option value="SAT">Saturday</option>
-    <option value="SUN">Sunday / Bank Holiday</option>
-</select>
-
-<button
-class="manual-button"
+<option value="MF">Monday - Friday</option>
+<option value="SAT">Saturday</option>
+<option value="SUN">Sunday / Bank Holiday</option>
+</select><button
+class="button"
 onclick="openManualDuty()">
+
 OPEN DUTY
-</button>
 
-</div>
+</button></div><div class="footer">DB Duty Checker Lite
 
-</div>
-
-<script>
+</div></div><script>
 
 const BASE = "DONNYBROOK/";
 
 const bankHolidays = [
+
 "2026-01-01",
 "2026-02-02",
 "2026-03-17",
@@ -144,28 +172,38 @@ const bankHolidays = [
 "2026-10-26",
 "2026-12-25",
 "2026-12-28"
+
 ];
 
 async function openCopiedDuty(){
 
 try{
 
-const text = await navigator.clipboard.readText();
+const text =
+await navigator.clipboard.readText();
 
 const rosterMatch =
-text.match(/Roster\s*:\s*([A-Z0-9]+)\s*\/\s*(\d+)/i);
+text.match(
+/Roster\s*:\s*([A-Z0-9]+)\s*\/\s*(\d+)/i
+);
 
 const dateMatch =
-text.match(/Date\s*:\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i);
+text.match(
+/Date\s*:\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i
+);
 
 if(!rosterMatch){
-alert("Roster not found.");
+
+alert("Roster not found in copied SMS.");
 return;
+
 }
 
 if(!dateMatch){
-alert("Date not found.");
+
+alert("Date not found in copied SMS.");
 return;
+
 }
 
 const roster =
@@ -214,7 +252,7 @@ roster + "-" + duty +
 catch(err){
 
 alert(
-"Copy the SMS first, then tap the logo."
+"Clipboard access failed. Copy the SMS first and try again."
 );
 
 }
@@ -234,8 +272,10 @@ const type =
 document.getElementById("dayType").value;
 
 if(!duty){
-alert("Enter a duty number.");
+
+alert("Please enter a duty number.");
 return;
+
 }
 
 window.location.href =
@@ -247,7 +287,5 @@ roster + "-" + duty +
 
 }
 
-</script>
-
-</body>
+</script></body>
 </html>
