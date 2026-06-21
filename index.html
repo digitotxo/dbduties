@@ -168,8 +168,8 @@ select{
 
 <input
 id="dutyNumber"
-type="number"
-placeholder="Example: 17">
+type="text"
+placeholder="Example: 17 or 8X">
 
 <label>Day Type</label>
 
@@ -221,7 +221,7 @@ await navigator.clipboard.readText();
 
 const rosterMatch =
 text.match(
-/Roster\s*:\s*([A-Z0-9]+)\s*\/\s*(\d+)/i
+/Roster\s*:\s*([A-Z0-9]+)\s*\/\s*([A-Z0-9]+)/i
 );
 
 const dateMatch =
@@ -246,9 +246,12 @@ if(roster === "DZ3"){
     roster = "BY";
 }
 
-const duty =
-rosterMatch[2].padStart(2,"0");
+let duty =
+rosterMatch[2].toUpperCase();
 
+if(/^\d+$/.test(duty)){
+    duty = duty.padStart(2,"0");
+}
 const day =
 parseInt(dateMatch[1]);
 
@@ -315,9 +318,14 @@ function openManualDuty(){
 let roster =
 document.getElementById("roster").value;
 
-const duty =
+let duty =
 document.getElementById("dutyNumber").value
-.padStart(2,"0");
+.trim()
+.toUpperCase();
+
+if(/^\d+$/.test(duty)){
+    duty = duty.padStart(2,"0");
+}
 
 const type =
 document.getElementById("dayType").value;
